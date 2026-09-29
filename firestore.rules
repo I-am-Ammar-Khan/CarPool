@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'ammarkhan101101@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Admin whitelist collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Carpool rides
+    match /rides/{rideId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.resource.data.driverId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (
+        resource.data.driverId == request.auth.uid ||
+        isAdmin() ||
+        // Allow updating available seats when booking occurs
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['availableSeats', 'status'])
+      );
+      allow delete: if isSignedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+    }
+
+    // Ride bookings
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn() && (
+        resource.data.passengerId == request.auth.uid ||
+        resource.data.driverId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && (request.resource.data.passengerId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (
+        resource.data.passengerId == request.auth.uid ||
+        resource.data.driverId == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isSignedIn() && (resource.data.passengerId == request.auth.uid || isAdmin());
+    }
+
+    // Ride coordination chat messages
+    match /messages/{messageId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.resource.data.senderId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // User notifications
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Ratings and reviews
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.resource.data.authorId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // User reports / complaints
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

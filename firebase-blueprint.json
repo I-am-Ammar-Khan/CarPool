@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with verification status and vehicle information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "age": { "type": "number" },
+        "occupation": { "type": "string", "maxLength": 100 },
+        "aadhaarNumber": { "type": "string", "maxLength": 20 },
+        "isAadhaarVerified": { "type": "boolean" },
+        "isPhoneVerified": { "type": "boolean" },
+        "isEmailVerified": { "type": "boolean" },
+        "avatar": { "type": "string", "maxLength": 500 },
+        "role": { "type": "string", "enum": ["driver", "passenger", "admin"] },
+        "rating": { "type": "number" },
+        "totalRatingsCount": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "email"]
+    },
+    "Ride": {
+      "title": "Ride",
+      "description": "Ride listing offered by a driver",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "driverId": { "type": "string", "maxLength": 128 },
+        "origin": { "type": "string", "maxLength": 150 },
+        "destination": { "type": "string", "maxLength": 150 },
+        "date": { "type": "string", "maxLength": 20 },
+        "departureTime": { "type": "string", "maxLength": 20 },
+        "totalSeats": { "type": "number" },
+        "availableSeats": { "type": "number" },
+        "pricePerSeat": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "in_progress", "completed", "cancelled"] },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "driverId", "origin", "destination", "date", "departureTime", "pricePerSeat"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Passenger ride seat booking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "rideId": { "type": "string", "maxLength": 128 },
+        "passengerId": { "type": "string", "maxLength": 128 },
+        "seatsBooked": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected", "completed", "cancelled"] },
+        "pickupLocation": { "type": "string", "maxLength": 150 },
+        "dropoffLocation": { "type": "string", "maxLength": 150 },
+        "isPaid": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "rideId", "passengerId", "seatsBooked", "status"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Chat message between passenger and driver in a ride",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "bookingId": { "type": "string", "maxLength": 128 },
+        "rideId": { "type": "string", "maxLength": 128 },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "senderName": { "type": "string", "maxLength": 100 },
+        "text": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "bookingId", "senderId", "text"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User notification alert",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 150 },
+        "message": { "type": "string", "maxLength": 500 },
+        "type": { "type": "string", "maxLength": 50 },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "userId", "title", "message"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Rating and review between driver and passenger",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "rideId": { "type": "string", "maxLength": 128 },
+        "authorId": { "type": "string", "maxLength": 128 },
+        "targetUserId": { "type": "string", "maxLength": 128 },
+        "rating": { "type": "number" },
+        "comment": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "rideId", "authorId", "targetUserId", "rating"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User account and profile document"
+    },
+    "/rides/{rideId}": {
+      "schema": "Ride",
+      "description": "Active and past carpool rides"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Ride reservation bookings"
+    },
+    "/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Ride passenger-driver coordination chat messages"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User push and in-app notifications"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Trip reviews and ratings"
+    }
+  }
+}

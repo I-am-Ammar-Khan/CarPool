@@ -1,0 +1,6 @@
+{
+  "name": "CarPool",
+  "description": "CarPool connects verified drivers with empty seats to passengers going the same way. Travel smarter. Spend less.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
