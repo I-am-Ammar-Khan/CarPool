@@ -1,6 +1,4 @@
-import { Ride, UserProfile, NotificationItem, Review, ComplaintReport } from './types';
-
-export const INITIAL_USERS: UserProfile[] = [
+export const INITIAL_USERS = [
   {
     id: 'usr_arjun_verma',
     name: 'Arjun Verma',
@@ -88,7 +86,7 @@ export const INITIAL_USERS: UserProfile[] = [
   },
 ];
 
-export const INITIAL_RIDES: Ride[] = [
+export const INITIAL_RIDES = [
   {
     id: 'ride_101',
     driverId: 'usr_arjun_verma',
@@ -230,7 +228,7 @@ export const INITIAL_RIDES: Ride[] = [
   },
 ];
 
-export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
+export const INITIAL_NOTIFICATIONS = [
   {
     id: 'notif_1',
     title: 'Ride Request Accepted',
@@ -258,7 +256,7 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   },
 ];
 
-export const INITIAL_REVIEWS: Review[] = [
+export const INITIAL_REVIEWS = [
   {
     id: 'rev_1',
     rideId: 'ride_101',
@@ -285,7 +283,7 @@ export const INITIAL_REVIEWS: Review[] = [
   },
 ];
 
-export const INITIAL_COMPLAINTS: ComplaintReport[] = [
+export const INITIAL_COMPLAINTS = [
   {
     id: 'rep_1',
     reporterId: 'usr_priya_sharma',
